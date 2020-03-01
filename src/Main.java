@@ -87,17 +87,8 @@ public class Main {
     //write all songs in playlist to file
     private static void writeCSVFile(String filename, PlaylistQueue playlist) throws IOException {
         try (CSVWriter writer = new CSVWriter(new FileWriter(filename))) {
-            writer.writeAll(playlistToRows(playlist));
+            writer.writeAll(playlist.toRows());
         }
-    }
-
-    //convert songs in playlist to rows
-    private static List<String[]> playlistToRows(PlaylistQueue playlist) {
-        List<String[]> rows = new ArrayList<>(playlist.size());
-        for (Song song : playlist) {
-            rows.add(song.toRow());
-        }
-        return rows;
     }
 
 }
@@ -138,6 +129,15 @@ class PlaylistQueue extends LinkedList<Song> {
             System.out.println("Playing song: " + song);
         }
         return song;
+    }
+
+    //convert songs in playlist to rows
+    List<String[]> toRows() {
+        List<String[]> rows = new ArrayList<>(this.size());
+        for (Song song : this) {
+            rows.add(song.toRow());
+        }
+        return rows;
     }
 }
 
