@@ -1,10 +1,13 @@
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -28,6 +31,9 @@ public class Main {
 
         //sort playlist in ascending order
         playlist.sort(new SongComparator());
+
+        //write sorted playlist in file
+        writeCSVFile("output/Playlist.csv", playlist);
 
         //create playlistHistory to track the recently listened to tracks
         PlaylistHistory playlistHistory = new PlaylistHistory();
@@ -77,6 +83,23 @@ public class Main {
         Set<Song> songSet = new HashSet<>(playlist);
         return new PlaylistQueue(songSet);
     }
+
+    //write all songs in playlist to file
+    private static void writeCSVFile(String filename, PlaylistQueue playlist) throws IOException {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(filename))) {
+            writer.writeAll(playlistToRows(playlist));
+        }
+    }
+
+    //convert songs in playlist to rows
+    private static List<String[]> playlistToRows(PlaylistQueue playlist) {
+        List<String[]> rows = new ArrayList<>(playlist.size());
+        for (Song song : playlist) {
+            rows.add(song.toRow());
+        }
+        return rows;
+    }
+
 }
 
 class SongQueue extends LinkedList<Song> {
@@ -142,6 +165,12 @@ class Song {
 
     public String toString() {
         return getTrack();
+    }
+
+    String[] toRow() {
+        String[] row = new String[1];
+        row[0] = getTrack();
+        return row;
     }
 
     @Override
